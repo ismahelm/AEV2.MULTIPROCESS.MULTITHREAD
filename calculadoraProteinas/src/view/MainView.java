@@ -1,0 +1,110 @@
+package view;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JLabel;
+import javax.swing.JTextPane;
+
+public class MainView extends JFrame {
+
+	private static final long serialVersionUID = 1L;
+	private JPanel contentPane;
+	public JTextField protein1;
+	public JTextField protein2;
+	public JTextField protein3;
+	public JTextField protein4;
+	public JButton btnSimulate;
+	public JLabel lblmt;
+	public JLabel lblmp;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MainView frame = new MainView();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public MainView() {
+		setTitle("Protein Calculator Trial Version");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 510, 401);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		protein1 = new JTextField();
+		protein1.setBounds(155, 89, 86, 20);
+		contentPane.add(protein1);
+		protein1.setColumns(10);
+		
+		protein2 = new JTextField();
+		protein2.setBounds(155, 136, 86, 20);
+		contentPane.add(protein2);
+		protein2.setColumns(10);
+		
+		protein3 = new JTextField();
+		protein3.setBounds(155, 185, 86, 20);
+		contentPane.add(protein3);
+		protein3.setColumns(10);
+		
+		protein4 = new JTextField();
+		protein4.setBounds(155, 228, 86, 20);
+		contentPane.add(protein4);
+		protein4.setColumns(10);
+		
+		btnSimulate = new JButton("simulate");
+		btnSimulate.setBounds(155, 293, 89, 23);
+		contentPane.add(btnSimulate);
+		
+		JLabel lblNewLabel = new JLabel("Type 1 proteins");
+		lblNewLabel.setBounds(31, 88, 114, 22);
+		contentPane.add(lblNewLabel);
+		
+		JLabel lblTypeProteins = new JLabel("Type 2 proteins");
+		lblTypeProteins.setBounds(31, 135, 114, 22);
+		contentPane.add(lblTypeProteins);
+		
+		JLabel lblTypeProteins_1 = new JLabel("Type 3 proteins");
+		lblTypeProteins_1.setBounds(31, 184, 114, 22);
+		contentPane.add(lblTypeProteins_1);
+		
+		JLabel lblTypeProteins_2 = new JLabel("Type 4 proteins");
+		lblTypeProteins_2.setBounds(31, 227, 114, 22);
+		contentPane.add(lblTypeProteins_2);
+		
+		JLabel lblNewLabel_1 = new JLabel("Timer");
+		lblNewLabel_1.setBounds(351, 89, 129, 20);
+		contentPane.add(lblNewLabel_1);
+		
+		lblmp = new JLabel("Multiprocess: 0ms");
+		lblmp.setBounds(291, 136, 315, 20);
+		contentPane.add(lblmp);
+		
+		lblmt = new JLabel("Multithread: 0ms");
+		lblmt.setBounds(291, 188, 369, 20);
+		contentPane.add(lblmt);
+	}
+}

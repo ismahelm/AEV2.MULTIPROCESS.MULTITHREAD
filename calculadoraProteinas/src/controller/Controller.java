@@ -1,0 +1,147 @@
+package controller;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import model.Model;
+import view.MainView;
+
+public class Controller {
+
+    private MainView mainView;
+    private Model model;
+
+    /**
+     * Constructor del Controller que inicializa la vista y el modelo.
+     * Configura los manejadores de eventos para los elementos de la vista.
+     * 
+     * @param mainView La vista principal de la aplicación.
+     * @param model El modelo que contiene la lógica de la aplicación.
+     */
+    public Controller(MainView mainView, Model model) {
+        this.mainView = mainView;
+        this.model = model;
+        initEventHandlers(); // Inicializa los manejadores de eventos
+    }
+
+    /**
+     * Método que configura los manejadores de eventos para la vista.
+     * En este caso, asigna una acción al botón de simulación (btnSimulate).
+     */
+    private void initEventHandlers() {
+        // Hacer visible la vista principal
+        mainView.setVisible(true);
+
+        // Asignar el manejador de acción al botón de simulación
+        mainView.btnSimulate.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Obtener la fecha y hora actual para generar nombres únicos para los directorios
+                String startTimestamp = generateTimestamp();
+                File directoryMP = new File("./docs/" + startTimestamp + "/MP");
+                File directoryMT = new File("./docs/" + startTimestamp + "/MT");
+
+                // Crear los directorios MP y MT (si no existen)
+                boolean mpCreated = directoryMP.mkdirs();
+                boolean mtCreated = directoryMT.mkdirs();
+
+                // Obtener las cantidades de proteínas a producir desde la vista
+                int type1ToProduce = Integer.parseInt(mainView.protein1.getText());
+                int type2ToProduce = Integer.parseInt(mainView.protein2.getText());
+                int type3ToProduce = Integer.parseInt(mainView.protein3.getText());
+                int type4ToProduce = Integer.parseInt(mainView.protein4.getText());
+                int total = type1ToProduce + type2ToProduce + type3ToProduce + type4ToProduce;
+
+                // Simulación con Multiproceso
+                long startTime = System.currentTimeMillis(); // Tiempo de inicio de la simulación
+                runMultiprocessSimulation(type1ToProduce, type2ToProduce, type3ToProduce, type4ToProduce, directoryMP);
+
+                // Comprobar si la simulación de Multiproceso ha terminado
+                double result;
+                while ((result = model.checkComplete(directoryMP, total)) == 0) {
+                    // Esperar hasta que la simulación se complete
+                }
+                long endTime = System.currentTimeMillis(); // Tiempo de fin de la simulación
+                mainView.lblmp.setText("Multiprocess: " + (endTime - startTime - result) + "ms"); // Mostrar el tiempo de la simulación MP
+
+                // Simulación con Multihilo
+                result=0;
+                startTime = System.currentTimeMillis(); // Tiempo de inicio de la simulación
+                runMultithreadedSimulation(type1ToProduce, type2ToProduce, type3ToProduce, type4ToProduce, directoryMT);
+
+                // Comprobar si la simulación de Multihilo ha terminado
+                while ((result = model.checkComplete(directoryMT, total)) == 0) {
+                    // Esperar hasta que la simulación se complete
+                }
+                endTime = System.currentTimeMillis(); // Tiempo de fin de la simulación
+                mainView.lblmt.setText("Multithread: " + (endTime - startTime-result) + "ms"); // Mostrar el tiempo de la simulación MT
+            }
+        });
+    }
+
+    /**
+     * Método que genera un timestamp basado en la fecha y hora actuales.
+     * El formato de la cadena es "yyyyMMdd_HHmmss_SSS".
+     * 
+     * @return El timestamp generado como una cadena.
+     */
+    private String generateTimestamp() {
+        LocalDateTime now = LocalDateTime.now(); // Obtener la fecha y hora actual
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS"); // Formato deseado para el timestamp
+        return now.format(formatter); // Devolver el timestamp como una cadena formateada
+    }
+
+    /**
+     * Método para ejecutar la simulación de multiproceso.
+     * Se lanza una simulación para cada tipo de proteína (1, 2, 3, 4) en el directorio MP.
+     * 
+     * @param type1ToProduce Cantidad de tipo 1 de proteína a producir.
+     * @param type2ToProduce Cantidad de tipo 2 de proteína a producir.
+     * @param type3ToProduce Cantidad de tipo 3 de proteína a producir.
+     * @param type4ToProduce Cantidad de tipo 4 de proteína a producir.
+     * @param directoryMP El directorio donde se almacenan los resultados de la simulación MP.
+     */
+    private void runMultiprocessSimulation(int type1ToProduce, int type2ToProduce, int type3ToProduce, int type4ToProduce, File directoryMP) {
+        // Ejecutar la simulación para cada tipo de proteína utilizando multiproceso
+        for (int i = 0; i < type1ToProduce; i++) {
+            model.LaunchMultiprocess("1", i, directoryMP);
+        }
+        for (int i = 0; i < type2ToProduce; i++) {
+            model.LaunchMultiprocess("2", i, directoryMP);
+        }
+        for (int i = 0; i < type3ToProduce; i++) {
+            model.LaunchMultiprocess("3", i, directoryMP);
+        }
+        for (int i = 0; i < type4ToProduce; i++) {
+            model.LaunchMultiprocess("4", i, directoryMP);
+        }
+    }
+
+    /**
+     * Método para ejecutar la simulación multihilo.
+     * Se lanza una simulación para cada tipo de proteína (1, 2, 3, 4) en el directorio MT.
+     * 
+     * @param type1ToProduce Cantidad de tipo 1 de proteína a producir.
+     * @param type2ToProduce Cantidad de tipo 2 de proteína a producir.
+     * @param type3ToProduce Cantidad de tipo 3 de proteína a producir.
+     * @param type4ToProduce Cantidad de tipo 4 de proteína a producir.
+     * @param directoryMT El directorio donde se almacenan los resultados de la simulación MT.
+     */
+    private void runMultithreadedSimulation(int type1ToProduce, int type2ToProduce, int type3ToProduce, int type4ToProduce, File directoryMT) {
+        // Ejecutar la simulación para cada tipo de proteína utilizando multihilo
+        for (int i = 0; i < type1ToProduce; i++) {
+            model.lanzarSimulacionMT("1", i, directoryMT);
+        }
+        for (int i = 0; i < type2ToProduce; i++) {
+            model.lanzarSimulacionMT("2", i, directoryMT);
+        }
+        for (int i = 0; i < type3ToProduce; i++) {
+            model.lanzarSimulacionMT("3", i, directoryMT);
+        }
+        for (int i = 0; i < type4ToProduce; i++) {
+            model.lanzarSimulacionMT("4", i, directoryMT);
+        }
+    }
+}

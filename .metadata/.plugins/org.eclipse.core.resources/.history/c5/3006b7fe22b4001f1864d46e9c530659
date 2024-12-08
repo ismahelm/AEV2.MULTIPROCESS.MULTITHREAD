@@ -1,0 +1,72 @@
+package model;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class SimulacionMT implements Runnable{
+	int type;
+	int n;
+	
+	public SimulacionMT(int type, int n, File dir)
+	{
+		this.type=type;
+		this.n=n;
+	}
+	
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+	
+	        LocalDateTime now = LocalDateTime.now();   
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss_SSS");        
+	        String starttimestamp = now.format(formatter);
+	        starttimestamp = starttimestamp.substring(0,starttimestamp.length()-1);
+			double calc = 0.0;
+			try {
+				
+				File file = new File ("./docs/PROT_MT_"+type+"_n"+n+"_"+starttimestamp+".sim");
+				FileWriter fw;
+				fw = new FileWriter (file);
+				BufferedWriter bw = new BufferedWriter (fw);
+				double simulationTime = Math.pow(5, type);
+			double startTime = System.currentTimeMillis(); 
+			double endTime = startTime + simulationTime; 
+			while (System.currentTimeMillis() < endTime) 
+			{ 
+				calc = Math.sin(Math.pow(Math.random(),2));
+				
+			}
+			LocalDateTime end = LocalDateTime.now();		
+			bw.write(starttimestamp);
+			bw.newLine();
+			bw.newLine();
+			
+	        String endtimestamp = end.format(formatter);
+	        endtimestamp = endtimestamp.substring(0,endtimestamp.length()-1);
+
+			bw.write(endtimestamp);		
+			bw.newLine();
+			bw.newLine();
+			Float startseconds = Float.parseFloat(starttimestamp.substring(13).replace("_", ".")) ;
+			Float endseconds = Float.parseFloat(endtimestamp.substring(13).replace("_", "."));
+			String writefinishtime = String.format("%.2f", endseconds-startseconds);
+			writefinishtime =  writefinishtime.replace(",", "_");
+			bw.write(writefinishtime);
+			bw.newLine();
+			bw.newLine();
+			bw.write(String.valueOf(calc));
+			
+			bw.close();
+			fw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+		}
+	}
+
+
